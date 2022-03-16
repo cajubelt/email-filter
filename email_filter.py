@@ -7,8 +7,8 @@ DOMAIN_COL_NAME = 'Domain'
 
 OUTPUT_COL_DELIMITER = '|'
 
-input_file = input("Enter input tsv file: ")
-output_file = input("Enter output txt file: ")
+input_file_name = input("Enter input tsv file: ")
+output_file_name = input("Enter output txt file: ")
 keywords_name = input("Enter keywords to remove from name list csv file: ")
 keywords_email = input("Enter keywords to remove from email list csv file: ")
 
@@ -27,8 +27,6 @@ keyword_list_email = [row[0] for row in keyword_list]
 '''
 Filter out the rows where a name or email matches a list of keywords.
 '''
-
-
 def filter_rows(
         rows: Iterable[Dict[str, str]],
         name_keywords: List[str],
@@ -38,21 +36,19 @@ def filter_rows(
             not row[FIRST_NAME_COL_NAME] in name_keywords and not row[EMAIL_COL_NAME] in email_keywords]
 
 
-with open(input_file, 'rU', encoding="utf8") as tsv_file:
-    f = open(output_file, "w+")
+with open(input_file_name, 'rU', encoding="utf8") as input_file:
+    dict_reader = csv.DictReader(input_file, delimiter='\t')
+    with open(output_file_name, "w+") as output_file:
+        if FIRST_NAME_COL_NAME not in dict_reader.fieldnames:
+            raise Exception(f'Missing required column: ${FIRST_NAME_COL_NAME}')
+        if EMAIL_COL_NAME not in dict_reader.fieldnames:
+            raise Exception(f'Missing required column: ${EMAIL_COL_NAME}')
+        include_rows = filter_rows(dict_reader, name_keywords=keyword_list_name, email_keywords=keyword_list_email)
+        col_names_ordered = sorted(include_rows[0].keys())
+        for row in include_rows:
+            f.write(OUTPUT_COL_DELIMITER.join([
+                row[col] for col in col_names_ordered
+            ]) + "\n")
 
-    dict_reader = csv.DictReader(tsv_file, delimiter='\t')
 
-    if FIRST_NAME_COL_NAME not in dict_reader.fieldnames:
-        raise Exception(f'Missing required column: ${FIRST_NAME_COL_NAME}')
-    if EMAIL_COL_NAME not in dict_reader.fieldnames:
-        raise Exception(f'Missing required column: ${EMAIL_COL_NAME}')
-    include_rows = filter_rows(dict_reader, name_keywords=keyword_list_name, email_keywords=keyword_list_email)
-    col_names_ordered = sorted(include_rows[0].keys())
-    for row in include_rows:
-        f.write(OUTPUT_COL_DELIMITER.join([
-            row[col] for col in col_names_ordered
-        ]) + "\n")
-f.close()
-
-print(f'Wrote ${len(include_rows)} rows to ${output_file}')
+print(f'Wrote ${len(include_rows)} rows to ${output_file_name}')
