@@ -31,22 +31,25 @@ with open(input_file, 'rU', encoding="utf8") as tsv_file:
     if EMAIL_COL_NAME not in dict_reader.fieldnames:
         raise Exception(f'Missing required column: ${EMAIL_COL_NAME}')
 
+    removed_count = 0
+    included_count = 0
     for row in dict_reader:
-
-        remove = False
-
         name = row[FIRST_NAME_COL_NAME]
         email = row[EMAIL_COL_NAME]
         domain = row[DOMAIN_COL_NAME]
 
         for word in keyword_list_name:
             if word[0] in name:
-                remove = True
+                removed_count += 1
+                continue
 
         for word in keyword_list_email:
             if word[0] in email:
-                remove = True
+                removed_count += 1
+                continue
 
-        if not remove:
-            f.write(name + "|" + email + "|" + domain + "\n")
+        included_count += 1
+        f.write(name + "|" + email + "|" + domain + "\n")
 f.close()
+
+print(f'Wrote ${included_count} rows to ${output_file} (filtered out ${removed_count})')
