@@ -1,4 +1,5 @@
 import csv
+from typing import Iterable, Dict, List
 
 FIRST_NAME_COL_NAME = 'Firstname'
 EMAIL_COL_NAME = 'Email'
@@ -13,13 +14,27 @@ with open(keywords_name, newline='') as f:
     reader = csv.reader(f)
     keyword_list = list(reader)
 
-keyword_list_name = keyword_list
+keyword_list_name = [row[0] for row in keyword_list]
 
 with open(keywords_email, newline='') as f:
     reader = csv.reader(f)
     keyword_list = list(reader)
 
-keyword_list_email = keyword_list
+keyword_list_email = [row[0] for row in keyword_list]
+
+'''
+Filter out the rows where a name or email matches a list of keywords.
+'''
+
+
+def filter_rows(
+        rows: Iterable[Dict[str, str]],
+        name_keywords: List[str],
+        email_keywords: List[str]
+) -> List[Dict[str, str]]:
+    return [row for row in rows if
+            not row[FIRST_NAME_COL_NAME] in name_keywords and not row[EMAIL_COL_NAME] in email_keywords]
+
 
 with open(input_file, 'rU', encoding="utf8") as tsv_file:
     f = open(output_file, "w+")
@@ -31,25 +46,9 @@ with open(input_file, 'rU', encoding="utf8") as tsv_file:
     if EMAIL_COL_NAME not in dict_reader.fieldnames:
         raise Exception(f'Missing required column: ${EMAIL_COL_NAME}')
 
-    removed_count = 0
-    included_count = 0
-    for row in dict_reader:
-        name = row[FIRST_NAME_COL_NAME]
-        email = row[EMAIL_COL_NAME]
-        domain = row[DOMAIN_COL_NAME]
-
-        for word in keyword_list_name:
-            if word[0] in name:
-                removed_count += 1
-                continue
-
-        for word in keyword_list_email:
-            if word[0] in email:
-                removed_count += 1
-                continue
-
-        included_count += 1
-        f.write(name + "|" + email + "|" + domain + "\n")
+    include_rows = filter_rows(dict_reader, name_keywords=keyword_list_name, email_keywords=keyword_list_email)
+    for row in include_rows:
+        f.write(row[FIRST_NAME_COL_NAME] + "|" + row[EMAIL_COL_NAME] + "|" + row[DOMAIN_COL_NAME] + "\n")
 f.close()
 
-print(f'Wrote ${included_count} rows to ${output_file} (filtered out ${removed_count})')
+print(f'Wrote ${len(include_rows)} rows to ${output_file}')
