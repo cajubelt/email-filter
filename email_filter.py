@@ -4,7 +4,6 @@ from typing import Iterable, Dict, List
 
 FIRST_NAME_COL_NAME = 'Firstname'
 EMAIL_COL_NAME = 'Email'
-DOMAIN_COL_NAME = 'Domain'
 
 OUTPUT_COL_DELIMITER = '|'
 
