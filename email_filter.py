@@ -5,6 +5,8 @@ FIRST_NAME_COL_NAME = 'Firstname'
 EMAIL_COL_NAME = 'Email'
 DOMAIN_COL_NAME = 'Domain'
 
+OUTPUT_COL_DELIMITER = '|'
+
 input_file = input("Enter input tsv file: ")
 output_file = input("Enter output txt file: ")
 keywords_name = input("Enter keywords to remove from name list csv file: ")
@@ -45,10 +47,12 @@ with open(input_file, 'rU', encoding="utf8") as tsv_file:
         raise Exception(f'Missing required column: ${FIRST_NAME_COL_NAME}')
     if EMAIL_COL_NAME not in dict_reader.fieldnames:
         raise Exception(f'Missing required column: ${EMAIL_COL_NAME}')
-
     include_rows = filter_rows(dict_reader, name_keywords=keyword_list_name, email_keywords=keyword_list_email)
+    col_names_ordered = sorted(include_rows[0].keys())
     for row in include_rows:
-        f.write(row[FIRST_NAME_COL_NAME] + "|" + row[EMAIL_COL_NAME] + "|" + row[DOMAIN_COL_NAME] + "\n")
+        f.write(OUTPUT_COL_DELIMITER.join([
+            row[col] for col in col_names_ordered
+        ]) + "\n")
 f.close()
 
 print(f'Wrote ${len(include_rows)} rows to ${output_file}')
