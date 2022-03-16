@@ -3,7 +3,7 @@ import unittest
 from email_filter import filter_rows
 
 
-class MyTestCase(unittest.TestCase):
+class EmailFilterTests(unittest.TestCase):
     def test_filter_emails(self):
         # filter out bad emails
         filtered = filter_rows([{'name': 'Charlie', 'email': 'Charlie@charlie.com'},
