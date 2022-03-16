@@ -11,10 +11,13 @@ OUTPUT_COL_DELIMITER = '|'
 def filter_rows(
         rows: Iterable[Dict[str, str]],
         name_keywords: List[str],
-        email_keywords: List[str]
+        email_keywords: List[str],
+        name_col_name: str = FIRST_NAME_COL_NAME,
+        email_col_name: str = EMAIL_COL_NAME
 ) -> List[Dict[str, str]]:
     return [row for row in rows if
-            not row[FIRST_NAME_COL_NAME].lower() in name_keywords and not row[EMAIL_COL_NAME].lower() in email_keywords]
+            not any(name_keyword.lower() in row[name_col_name].lower() for name_keyword in name_keywords) and
+            not any(email_keyword.lower() in row[email_col_name].lower() for email_keyword in email_keywords)]
 
 
 def main():
@@ -25,6 +28,8 @@ def main():
                         default='./data/KeywordName.csv')
     parser.add_argument('--email_keywords', type=str, help='File with email keywords to remove',
                         default='./data/KeywordEmail.csv')
+    parser.add_argument('--name_col_name', type=str, help='Name of the "first name" column', default=FIRST_NAME_COL_NAME)
+    parser.add_argument('--email_col_name', type=str, help='Name of the "email" column', default=EMAIL_COL_NAME)
     args = parser.parse_args()
 
     with open(args.name_keywords, newline='') as f:
@@ -38,11 +43,15 @@ def main():
     with open(args.input, 'rU', encoding="utf8") as input_file:
         dict_reader = csv.DictReader(input_file, delimiter='\t')
         with open(args.output, "w+") as output_file:
-            if FIRST_NAME_COL_NAME not in dict_reader.fieldnames:
-                raise Exception(f'Missing required column: {FIRST_NAME_COL_NAME}')
-            if EMAIL_COL_NAME not in dict_reader.fieldnames:
-                raise Exception(f'Missing required column: {EMAIL_COL_NAME}')
-            include_rows = filter_rows(dict_reader, name_keywords=keyword_list_name, email_keywords=keyword_list_email)
+            if args.name_col_name not in dict_reader.fieldnames:
+                raise Exception(f'Missing required column: {args.name_col_name}')
+            if args.email_col_name not in dict_reader.fieldnames:
+                raise Exception(f'Missing required column: {args.email_col_name}')
+            include_rows = filter_rows(dict_reader,
+                                       name_keywords=keyword_list_name,
+                                       email_keywords=keyword_list_email,
+                                       name_col_name=args.name_col_name,
+                                       email_col_name=args.email_col_name)
             for row in include_rows:
                 output_file.write(OUTPUT_COL_DELIMITER.join([
                     row[col] or '' for col in dict_reader.fieldnames
