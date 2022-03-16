@@ -7,6 +7,7 @@ DOMAIN_COL_NAME = 'Domain'
 
 OUTPUT_COL_DELIMITER = '|'
 
+
 def filter_rows(
         rows: Iterable[Dict[str, str]],
         name_keywords: List[str],
@@ -51,5 +52,5 @@ def main():
     print(f'Wrote ${len(include_rows)} rows to ${output_file_name}')
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     main()
