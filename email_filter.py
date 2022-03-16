@@ -14,7 +14,7 @@ def filter_rows(
         email_keywords: List[str]
 ) -> List[Dict[str, str]]:
     return [row for row in rows if
-            not row[FIRST_NAME_COL_NAME] in name_keywords and not row[EMAIL_COL_NAME] in email_keywords]
+            not row[FIRST_NAME_COL_NAME].lower() in name_keywords and not row[EMAIL_COL_NAME].lower() in email_keywords]
 
 
 def main():
@@ -29,11 +29,11 @@ def main():
 
     with open(args.name_keywords, newline='') as f:
         reader = csv.reader(f)
-        keyword_list_name = [row[0] for row in list(reader)]
+        keyword_list_name = [row[0].lower() for row in list(reader)]
 
     with open(args.email_keywords, newline='') as f:
         reader = csv.reader(f)
-        keyword_list_email = [row[0] for row in list(reader)]
+        keyword_list_email = [row[0].lower() for row in list(reader)]
 
     with open(args.input, 'rU', encoding="utf8") as input_file:
         dict_reader = csv.DictReader(input_file, delimiter='\t')
