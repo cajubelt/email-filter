@@ -4,11 +4,10 @@
 
 Run the script by copying this into the command line (PowerShell on Windows, or Terminal on Mac):
 ```bash
-python3 /path/to/project/email_filter.py
+cd /path/to/project
+python3 email_filter.py --input=./input-file-name.tsv --output=./output-file-name.tsv --name_keywords=./name-keywords-file-name.csv --email_keywords=./email-keywords-file-name.csv
 ```
-(Replace `/path/to/project` with the filepath. You can also get this by dragging the file over to PowerShell.)
-
-It will ask for a input file, output file, a csv file containing keywords to elimnate in the name field, and a csv file containing keywords to eliminate in the email field
+For the above^, replace `/path/to/project` with the filepath and the file names with the relevant file names. You can also get the filepath by dragging the folder where the script lives over to PowerShell.
 
 The input file you can make in google sheets by going to File -> Downlaod -> Tab-separated Values (I had to use this because of all the commas in the data.)
 
