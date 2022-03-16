@@ -2,9 +2,6 @@ import argparse
 import csv
 from typing import Iterable, Dict, List
 
-FIRST_NAME_COL_NAME = 'Firstname'
-EMAIL_COL_NAME = 'Email'
-
 OUTPUT_COL_DELIMITER = '|'
 
 
@@ -12,8 +9,8 @@ def filter_rows(
         rows: Iterable[Dict[str, str]],
         name_keywords: List[str],
         email_keywords: List[str],
-        name_col_name: str = FIRST_NAME_COL_NAME,
-        email_col_name: str = EMAIL_COL_NAME
+        name_col_name: str,
+        email_col_name: str
 ) -> List[Dict[str, str]]:
     return [row for row in rows if
             not any(name_keyword.lower() in row[name_col_name].lower() for name_keyword in name_keywords) and
@@ -28,8 +25,8 @@ def main():
                         default='./data/KeywordName.csv')
     parser.add_argument('--email_keywords', type=str, help='File with email keywords to remove',
                         default='./data/KeywordEmail.csv')
-    parser.add_argument('--name_col_name', type=str, help='Name of the "first name" column', default=FIRST_NAME_COL_NAME)
-    parser.add_argument('--email_col_name', type=str, help='Name of the "email" column', default=EMAIL_COL_NAME)
+    parser.add_argument('--name_col_name', type=str, help='Name of the "first name" column', default='Firstname')
+    parser.add_argument('--email_col_name', type=str, help='Name of the "email" column', default='Email')
     args = parser.parse_args()
 
     with open(args.name_keywords, newline='') as f:
