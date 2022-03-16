@@ -26,6 +26,11 @@ with open(input_file, 'rU', encoding="utf8") as tsv_file:
 
     dict_reader = csv.DictReader(tsv_file, delimiter='\t')
 
+    if FIRST_NAME_COL_NAME not in dict_reader.fieldnames:
+        raise Exception(f'Missing required column: ${FIRST_NAME_COL_NAME}')
+    if EMAIL_COL_NAME not in dict_reader.fieldnames:
+        raise Exception(f'Missing required column: ${EMAIL_COL_NAME}')
+
     for row in dict_reader:
 
         remove = False
